@@ -1,8 +1,15 @@
 import React from 'react';
+import AppLayout from "../components/AppLayout";
+import HeadComponent from "../components/HeadComponent";
 
 const Signup = () => {
     return (
-        <div>회원가입 페이지</div>
+        <>
+            <HeadComponent title="회원가입 | Blog"/>
+            <AppLayout>
+                <div>회원가입</div>
+            </AppLayout>
+        </>
     )
 };
 
