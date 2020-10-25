@@ -4,12 +4,9 @@ import HeadComponent from "../components/HeadComponent";
 
 const Home = () => {
     return (
-        <>
+        <AppLayout>
             <HeadComponent title="메인 | Blog"/>
-            <AppLayout>
-                <div>본문</div>
-            </AppLayout>
-        </>
+        </AppLayout>
     )
 }
 
