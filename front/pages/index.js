@@ -7,7 +7,7 @@ const Home = () => {
         <>
             <HeadComponent title="메인 | Blog"/>
             <AppLayout>
-                <div>Hello, Next!</div>
+                <div>본문</div>
             </AppLayout>
         </>
     )
