@@ -32,7 +32,7 @@ const dummyPost = {
     content: ' 번째 게시글 #해시태그 #익스프레스',
     Images: [
         {src: 'https://source.unsplash.com/random/301x201'},
-        {src: 'https://source.unspla두sh.com/random/301x201'},
+        {src: 'https://source.unsplash.com/random/301x201'},
         {src: 'https://source.unsplash.com/random/301x201'},
     ],
     Comments: [
