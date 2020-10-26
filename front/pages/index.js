@@ -13,7 +13,6 @@ const Home = () => {
             <HeadComponent title="메인 | Blog"/>
             {isLoggedIn && <PostForm />}
             {mainPosts.map((post) => <PostCard key={post.id} post={post}/>)}
-
         </AppLayout>
     )
 }

@@ -25,7 +25,21 @@ export const initialState = {
 
 const dummyPost = {
     id: 2,
-    content: '더미'
+    User: {
+        id: 'bytrustu',
+        nickname: 'bytrustu'
+    },
+    content: ' 번째 게시글 #해시태그 #익스프레스',
+    Images: [
+        {src: 'https://source.unsplash.com/random/301x201'},
+        {src: 'https://source.unspla두sh.com/random/301x201'},
+        {src: 'https://source.unsplash.com/random/301x201'},
+    ],
+    Comments: [
+        {User: {nickname: 'joon1'}, content: '안녕하세요1',},
+        {User: {nickname: 'joon2'}, content: '안녕하세요2',},
+        {User: {nickname: 'joon3'}, content: '안녕하세요3',},
+    ],
 }
 
 const reducer = (state = initialState, action) => {
