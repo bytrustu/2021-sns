@@ -10,7 +10,7 @@ const Home = () => {
     const { mainPosts } = useSelector((state) => state.post);
     return (
         <AppLayout>
-            <HeadComponent title="메인 | Blog"/>
+            <HeadComponent title="메인 | Sns"/>
             {isLoggedIn && <PostForm />}
             {mainPosts.map((post) => <PostCard key={post.id} post={post}/>)}
         </AppLayout>

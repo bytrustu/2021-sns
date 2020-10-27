@@ -10,7 +10,7 @@ const Profile = () => {
 
     return (
         <AppLayout>
-            <HeadComponent title="내 프로필 | Blog"/>
+            <HeadComponent title="내 프로필 | Sns"/>
             <NicknameEditForm />
             <FollowList header="팔로잉 목록" data={followingList}/>
             <FollowList header="팔로워 목록" data={followerList}/>

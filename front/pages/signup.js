@@ -39,7 +39,7 @@ const Signup = () => {
 
     return (
             <AppLayout>
-                <HeadComponent title="회원가입 | Blog"/>
+                <HeadComponent title="회원가입 | Sns"/>
                 <Form onFinish={onSubmit}>
                     <div>
                         <label htmlFor="user-id">아이디</label>
