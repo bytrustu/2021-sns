@@ -1,21 +1,21 @@
 import React from 'react';
-import HeadComponent from "../components/HeadComponent";
-import AppLayout from "../components/AppLayout";
-import FollowList from "../components/FollowList";
-import NicknameEditForm from "../components/NicknameEditForm";
+import { useSelector } from 'react-redux';
+import HeadComponent from '../components/HeadComponent';
+import AppLayout from '../components/AppLayout';
+import FollowList from '../components/FollowList';
+import NicknameEditForm from '../components/NicknameEditForm';
 
 const Profile = () => {
-    const followingList = [{nickname: 'bytrustu'},{nickname: 'bytrustu2'},{nickname: 'bytrustu3'}];
-    const followerList = [{nickname: 'bytrustu'},{nickname: 'bytrustu2'},{nickname: 'bytrustu3'}];
+  const { me } = useSelector((state) => state.user);
 
-    return (
-        <AppLayout>
-            <HeadComponent title="내 프로필 | Sns"/>
-            <NicknameEditForm />
-            <FollowList header="팔로잉 목록" data={followingList}/>
-            <FollowList header="팔로워 목록" data={followerList}/>
-        </AppLayout>
-)
+  return (
+    <AppLayout>
+      <HeadComponent title="내 프로필 | Sns" />
+      <NicknameEditForm />
+      <FollowList header="팔로잉 목록" data={me.Followings} />
+      <FollowList header="팔로워 목록" data={me.Followers} />
+    </AppLayout>
+  );
 };
 
 export default Profile;
