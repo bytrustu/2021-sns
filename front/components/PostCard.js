@@ -2,12 +2,15 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Avatar, Button, Card, Popover, List, Comment } from 'antd';
 import { RetweetOutlined, HeartOutlined, MessageOutlined, EllipsisOutlined, HeartTwoTone } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
+import { REMOVE_POST_REQUEST } from '../reducers/types';
 
 const PostCard = ({ post }) => {
+  const dispatch = useDispatch();
+  const { removePostLoading } = useSelector((state) => state.post);
   const [liked, setLiked] = useState(false);
   const [commentFormOpended, setCommentFormOpended] = useState(false);
   const onToggleLike = useCallback(() => {
@@ -15,6 +18,13 @@ const PostCard = ({ post }) => {
   }, []);
   const onToggleComment = useCallback(() => {
     setCommentFormOpended(((prev) => !prev));
+  }, []);
+
+  const onRemovePost = useCallback(() => {
+    dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    });
   }, []);
   const id = useSelector((state) => state.user.me?.id);
   return (
@@ -34,18 +44,19 @@ const PostCard = ({ post }) => {
                 {id && post.User.id === id && (
                   <>
                     <Button type="primary">수정</Button>
-                    <Button type="danger">삭제</Button>
+                    <Button type="danger" loading={removePostLoading} onClick={onRemovePost}>삭제</Button>
                   </>
                 )}
                 <Button type="danger">신고</Button>
               </Button.Group>
-            )}>
+            )}
+          >
             <EllipsisOutlined />
           </Popover>,
         ]}
       >
         <Card.Meta
-          avartar={<Avatar>{post.User.nickname[0]}</Avatar>}
+          avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
           description={<PostCardContent postData={post.content} />}
         />
