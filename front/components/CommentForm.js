@@ -6,7 +6,7 @@ import useInput from '../hooks/useInput';
 import { ADD_COMMENT_REQUEST } from '../reducers/types';
 
 const CommentForm = ({ post }) => {
-  const id = useSelector((state) => state.me?.id);
+  const id = useSelector((state) => state.user.me?.id);
   const { addCommentDone, addCommentLoading } = useSelector((state) => state.post);
   const [commentText, onChangeCommentText, setCommentText] = useInput('');
   const dispatch = useDispatch();
