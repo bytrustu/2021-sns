@@ -1,13 +1,40 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import AppLayout from '../components/AppLayout';
 import HeadComponent from '../components/HeadComponent';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
+import { LOAD_POST_REQUEST } from '../reducers/types';
 
 const Home = () => {
+  const dispatch = useDispatch();
   const { me } = useSelector((state) => state.user);
-  const { mainPosts } = useSelector((state) => state.post);
+  const { mainPosts, loadPostLoading, hasMorePosts } = useSelector((state) => state.post);
+
+  useEffect(() => {
+    dispatch({
+      type: LOAD_POST_REQUEST,
+    });
+  }, []);
+
+  useEffect(() => {
+    function onScroll() {
+      const { scrollY } = window;
+      const { clientHeight, scrollHeight } = document.documentElement;
+      if (scrollY + clientHeight > scrollHeight - 300) {
+        if (hasMorePosts && !loadPostLoading) {
+          dispatch({
+            type: LOAD_POST_REQUEST,
+          });
+        }
+      }
+    }
+    window.addEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [hasMorePosts, loadPostLoading]);
+
   return (
     <AppLayout>
       <HeadComponent title="메인 | Sns" />
