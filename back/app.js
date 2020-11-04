@@ -6,8 +6,9 @@ const passport = require('passport');
 
 const app = express();
 const { PORT, COOKIE_SECRET } = require('./config');
-const postRouter = require('./routes/post')
-const userRouter = require('./routes/user')
+const postRouter = require('./routes/post');
+const postsRouter = require('./routes/posts');
+const userRouter = require('./routes/user');
 const db = require('./models');
 const passportConfig = require('./passport');
 
@@ -20,8 +21,8 @@ db.sequelize.sync()
 passportConfig();
 
 app.use(cors({
-  origin: '*',
-  credentials: false,
+  origin: ['http://localhost:3060'],
+  credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,6 +36,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/post', postRouter);
+app.use('/posts', postsRouter);
 app.use('/user', userRouter);
 
 app.listen(PORT, () => {

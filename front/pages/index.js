@@ -4,7 +4,7 @@ import AppLayout from '../components/AppLayout';
 import HeadComponent from '../components/HeadComponent';
 import PostForm from '../components/PostForm';
 import PostCard from '../components/PostCard';
-import { LOAD_POST_REQUEST } from '../reducers/types';
+import { LOAD_POST_REQUEST, LOAD_MY_INFO_REQUEST } from '../reducers/types';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -12,6 +12,9 @@ const Home = () => {
   const { mainPosts, loadPostLoading, hasMorePosts } = useSelector((state) => state.post);
 
   useEffect(() => {
+    dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    });
     dispatch({
       type: LOAD_POST_REQUEST,
     });
@@ -29,6 +32,7 @@ const Home = () => {
         }
       }
     }
+
     window.addEventListener('scroll', onScroll);
     return () => {
       window.removeEventListener('scroll', onScroll);
