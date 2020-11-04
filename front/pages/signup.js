@@ -1,18 +1,38 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Input, Checkbox, Button } from 'antd';
+import Router from 'next/router';
 import AppLayout from '../components/AppLayout';
 import HeadComponent from '../components/HeadComponent';
 import useInput from '../hooks/useInput';
 import { SIGN_UP_REQUEST } from '../reducers/types';
 
-const Signup = () => {
-  const dispatch = useDispatch();
-  const { signUpLoading } = useSelector((state) => state.user);
-  const ErrorMessage = styled.div`
+const ErrorMessage = styled.div`
         color: red;
     `;
+
+const Signup = () => {
+  const dispatch = useDispatch();
+  const { signUpLoading, signUpDone, signUpError, me } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (me && me.id) {
+      Router.replace('/');
+    }
+  }, [me && me.id]);
+
+  useEffect(() => {
+    if (signUpDone) {
+      Router.replace('/');
+    }
+  }, [signUpDone]);
+
+  useEffect(() => {
+    if (signUpError) {
+      alert(signUpError);
+    }
+  });
 
   const [email, onChangeEmail] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
@@ -31,7 +51,7 @@ const Signup = () => {
     setTerm(e.target.checked);
   }, []);
 
-  const onSubmit = useCallback((e) => {
+  const onSubmit = useCallback(() => {
     if (password !== passwordCheck) {
       return setPasswordError(true);
     }
@@ -56,17 +76,17 @@ const Signup = () => {
         <div>
           <label htmlFor="user-nickname">닉네임</label>
           <br />
-          <Input type="email" name="user-nickname" value={nickname} required onChange={onChangeNickname} />
+          <Input type="text" name="user-nickname" value={nickname} required onChange={onChangeNickname} />
         </div>
         <div>
           <label htmlFor="user-password">비밀번호</label>
           <br />
-          <Input name="user-password" value={password} required onChange={onPassword} />
+          <Input type="password" name="user-password" value={password} required onChange={onPassword} />
         </div>
         <div>
           <label htmlFor="user-passwordCheck">비밀번호체크</label>
           <br />
-          <Input name="user-passwordCheck" value={passwordCheck} required onChange={onChangePasswordCheck} />
+          <Input type="password" name="user-passwordCheck" value={passwordCheck} required onChange={onChangePasswordCheck} />
           {passwordError && <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>}
         </div>
         <div>
