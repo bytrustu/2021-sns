@@ -9,7 +9,6 @@ import {
   LOAD_FOLLOWERS_REQUEST,
   LOAD_FOLLOWINGS_REQUEST,
   LOAD_MY_INFO_REQUEST,
-  LOAD_POST_REQUEST,
 } from '../reducers/types';
 
 const Profile = () => {
