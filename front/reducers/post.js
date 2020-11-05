@@ -13,7 +13,7 @@ import {
   LIKE_POST_SUCCESS,
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
-  LOAD_POST_SUCCESS,
+  LOAD_POST_SUCCESS, REMOVE_IMAGE,
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
@@ -70,11 +70,6 @@ export const generateDummyPost = (number) => Array(number).fill().map((_) => ({
   }],
 }));
 
-export const addPost = (data) => ({
-  type: ADD_POST_REQUEST,
-  data,
-});
-
 export const addComment = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
@@ -82,6 +77,9 @@ export const addComment = (data) => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
+    case REMOVE_IMAGE:
+      draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data);
+      break;
     case UPLOAD_IMAGES_REQUEST:
       draft.uploadImagesLoading = true;
       draft.uploadImagesDone = false;
@@ -153,6 +151,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.addPostLoading = false;
       draft.addPostDone = true;
       draft.mainPosts.unshift(action.data);
+      draft.imagePaths = [];
       break;
     case ADD_POST_FAILURE:
       draft.addPostLoading = false;

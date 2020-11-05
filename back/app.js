@@ -3,6 +3,7 @@ const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
+const path = require('path');
 
 const app = express();
 const { PORT, COOKIE_SECRET } = require('./config');
@@ -24,6 +25,8 @@ app.use(cors({
   origin: ['http://localhost:3060'],
   credentials: true,
 }));
+
+app.use('/images', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(COOKIE_SECRET));

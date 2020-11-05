@@ -8,18 +8,43 @@ const { Post, Comment, User, Image } = require('../models');
 const router = express.Router();
 
 try {
-  fs.accessSync('uploads')
+  fs.accessSync('uploads');
 } catch (e) {
   console.log('uploads 폴더가 없으므로 생성 합니다.');
   fs.mkdirSync('uploads');
 }
 
-router.post('/', isLoggedIn, async (req, res) => {
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, 'uploads');
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      done(null, `${basename}_${new Date().getTime()}${ext}`);
+
+    },
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 },
+});
+
+router.post('/', isLoggedIn, upload.none(), async (req, res) => {
   try {
+    const { content, image } = req.body;
     const post = await Post.create({
-      content: req.body.content,
+      content,
       UserId: req.user.id,
     });
+    if (image) {
+      if (Array.isArray(image)) {
+        const imageResult = await Promise.all(image.map((image) => Image.create({ src: image })));
+        await post.addImage(imageResult);
+      } else {
+        const imageResult = await Image.create({ src: image });
+        await post.addImage(imageResult);
+      }
+    }
     const fullPost = await Post.findOne({
       where: { id: post.id },
       include: [{
@@ -114,19 +139,6 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => { // DELETE /pos
   }
 });
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, done) {
-      done(null, 'uploads');
-    },
-    filename(req, file, done) {
-      const ext = path.extname(file.originalname);
-      const basename = path.basename(file.originalname, ext);
-      done(null, basename + new Date().getTime() + ext);
-    }
-  }),
-  limits: { fileSize: 20 * 1024 * 1024 },
-});
 router.post('/images', isLoggedIn, upload.array('image'), async (req, res, next) => {
   console.log(req.files);
   res.json(req.files.map((v) => v.filename));
