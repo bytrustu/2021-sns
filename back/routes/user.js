@@ -99,10 +99,28 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
   })(req, res, next);
 });
 
-router.post('/logout', isLoggedIn, (req, res) => {
+router.post('/logout', isLoggedIn, (req, res, next) => {
   req.logout();
   req.session.destroy();
   res.send('ok');
+});
+
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+  try {
+    const { nickname } = req.body;
+    const { id } = req.user;
+    await User.update({
+      nickname
+    }, {
+      where: {
+        id
+      }
+    });
+    res.status(200).json({ nickname });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 })
 
 module.exports = router;

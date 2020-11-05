@@ -17,8 +17,12 @@ router.post('/', isLoggedIn, async (req, res) => {
         model: Comment,
       }, {
         model: User,
-      }]
-    })
+      }, {
+        model: User,
+        as: 'Likers',
+        attributes: ['id'],
+      }],
+    });
     res.status(201).json(fullPost);
   } catch (e) {
     console.error(e);
@@ -31,9 +35,9 @@ router.post('/comment', isLoggedIn, async (req, res) => {
     const { id: UserId } = req.user;
     const post = await Post.findOne({
       where: {
-        id: PostId
-      }
-    })
+        id: PostId,
+      },
+    });
     if (!post) {
       return res.status(403).send('존재하지 않는 게시글 입니다.');
     }
@@ -48,13 +52,56 @@ router.post('/comment', isLoggedIn, async (req, res) => {
         model: User,
         attributes: ['id', 'nickname'],
       }],
-    })
+    });
     res.status(201).json(fullComment);
   } catch (e) {
     console.error(e);
   }
-})
+});
 
+router.patch('/:postId/like', isLoggedIn, async (req, res, next) => { // PATCH /post/1/like
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
+    await post.addLikers(req.user.id);
+    res.json({ PostId: post.id, UserId: req.user.id });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:postId/like', isLoggedIn, async (req, res, next) => { // DELETE /post/1/like
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
+    await post.removeLikers(req.user.id);
+    res.json({ PostId: post.id, UserId: req.user.id });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:postId', isLoggedIn, async (req, res, next) => { // DELETE /post/1/like
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    await Post.destroy({
+      where: {
+        id: postId,
+        UserId: req.user.id,
+      },
+    });
+    res.json({ PostId: postId });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
 
 
 module.exports = router;
