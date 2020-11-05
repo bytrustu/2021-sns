@@ -6,22 +6,37 @@ import {
   CHANGE_NICKNAME_SUCCESS,
   FOLLOW_FAILURE,
   FOLLOW_REQUEST,
-  FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS,
+  FOLLOW_SUCCESS, LOAD_FOLLOWERS_FAILURE,
+  LOAD_FOLLOWERS_REQUEST,
+  LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
   LOG_IN_FAILURE,
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
   LOG_OUT_FAILURE,
   LOG_OUT_REQUEST,
-  LOG_OUT_SUCCESS,
+  LOG_OUT_SUCCESS, REMOVE_FOLLOWER_FAILURE, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS,
   REMOVE_POST_OF_ME,
   SIGN_UP_FAILURE,
   SIGN_UP_REQUEST,
-  SIGN_UP_SUCCESS, UNFOLLOW_FAILURE,
+  SIGN_UP_SUCCESS,
+  UNFOLLOW_FAILURE,
   UNFOLLOW_REQUEST,
   UNFOLLOW_SUCCESS,
 } from './types';
 
 export const initialState = {
+  removeFollowerLoading: false, // 팔로워 유저 삭제 시도중
+  removeFollowerDone: false,
+  removeFollowerError: false,
+  loadFollowersLoading: false, // 팔로우 유저 목록 시도중
+  loadFollowersDone: false,
+  loadFollowersError: false,
+  loadFollowingsLoading: false, // 팔로잉 유저 목록 시도중
+  loadFollowingsDone: false,
+  loadFollowingsError: false,
   loadMyInfoLoading: false, // 유저 정보 가져오기 시도중
   loadMyInfoDone: false,
   loadMyInfoError: false,
@@ -48,15 +63,6 @@ export const initialState = {
   logInData: {},
 };
 
-const dummyUser = (data) => ({
-  ...data,
-  nickname: 'bytrustu',
-  id: 1,
-  Posts: [{ id: 1 }],
-  Followings: [{ nickname: 'joon1' }, { nickname: 'joon2' }, { nickname: 'joon3' }, { nickname: 'joon4' }],
-  Followers: [{ nickname: 'joon1' }, { nickname: 'joon2' }, { nickname: 'joon3' }, { nickname: 'joon4' }],
-});
-
 export const loginRequestAction = (data) => ({
   type: LOG_IN_REQUEST,
   data,
@@ -68,6 +74,48 @@ export const logoutRequestAction = () => ({
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
+    case REMOVE_FOLLOWER_REQUEST:
+      draft.removeFollowerLoading = true;
+      draft.removeFollowerError = null;
+      draft.removeFollowerDone = false;
+      break;
+    case REMOVE_FOLLOWER_SUCCESS:
+      draft.me.Followers = draft.me.Followers.filter((v) => v.id !== action.data.UserId);
+      draft.removeFollowerLoading = false;
+      draft.removeFollowerDone = true;
+      break;
+    case REMOVE_FOLLOWER_FAILURE:
+      draft.removeFollowerLoading = false;
+      draft.removeFollowerError = action.error;
+      break;
+    case LOAD_FOLLOWERS_REQUEST:
+      draft.loadFollowersLoading = true;
+      draft.loadFollowersError = null;
+      draft.loadFollowersDone = false;
+      break;
+    case LOAD_FOLLOWERS_SUCCESS:
+      draft.loadFollowersLoading = false;
+      draft.me.Followers = action.data;
+      draft.loadFollowersDone = true;
+      break;
+    case LOAD_FOLLOWERS_FAILURE:
+      draft.loadFollowersLoading = false;
+      draft.loadFollowersError = action.error;
+      break;
+    case LOAD_FOLLOWINGS_REQUEST:
+      draft.loadFollowingsLoading = true;
+      draft.loadFollowingsError = null;
+      draft.loadFollowingsDone = false;
+      break;
+    case LOAD_FOLLOWINGS_SUCCESS:
+      draft.loadFollowingsLoading = false;
+      draft.loadFollowingsDone = true;
+      draft.me.Followings = action.data;
+      break;
+    case LOAD_FOLLOWINGS_FAILURE:
+      draft.loadFollowingsLoading = false;
+      draft.loadFollowingsError = action.error;
+      break;
     case LOAD_MY_INFO_REQUEST:
       draft.loadMyInfoLoading = true;
       draft.loadMyInfoError = null;
@@ -90,7 +138,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case FOLLOW_SUCCESS:
       draft.followLoading = false;
       draft.followDone = true;
-      draft.me.Followings.push({ id: action.data });
+      draft.me.Followings.push({ id: action.data.UserId });
       break;
     case FOLLOW_FAILURE:
       draft.followLoading = false;
@@ -104,7 +152,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case UNFOLLOW_SUCCESS:
       draft.unfollowLoading = false;
       draft.unfollowDone = true;
-      draft.me.Followings = draft.me.Followings.filter((v) => v.id !== action.data);
+      draft.me.Followings = draft.me.Followings.filter((v) => v.id !== action.data.UserId);
       break;
     case UNFOLLOW_FAILURE:
       draft.unfollowLoading = false;
