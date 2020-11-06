@@ -10,14 +10,21 @@ import {
   ADD_POST_TO_ME,
   LIKE_POST_FAILURE,
   LIKE_POST_REQUEST,
-  LIKE_POST_SUCCESS,
+  LIKE_POST_SUCCESS, LOAD_HASHTAG_POSTS_REQUEST,
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
   LOAD_POST_SUCCESS,
+  LOAD_SINGLE_POST_FAILURE,
+  LOAD_SINGLE_POST_REQUEST,
+  LOAD_SINGLE_POST_SUCCESS, LOAD_USER_POSTS_FAILURE,
+  LOAD_USER_POSTS_REQUEST, LOAD_USER_POSTS_SUCCESS,
   REMOVE_POST_FAILURE,
   REMOVE_POST_OF_ME,
   REMOVE_POST_REQUEST,
-  REMOVE_POST_SUCCESS, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS,
+  REMOVE_POST_SUCCESS,
+  RETWEET_FAILURE,
+  RETWEET_REQUEST,
+  RETWEET_SUCCESS,
   UNLIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
   UNLIKE_POST_SUCCESS,
@@ -25,6 +32,46 @@ import {
   UPLOAD_IMAGES_REQUEST,
   UPLOAD_IMAGES_SUCCESS,
 } from '../reducers/types';
+
+function loadUserPostsAPI(data, lastId) {
+  return axios.get(`/user/${data}/posts?lastId=${lastId || 0}`);
+}
+
+function* loadUserPosts(action) {
+  try {
+    const result = yield call(loadUserPostsAPI, action.data, action.lastId);
+    yield put({
+      type: LOAD_USER_POSTS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_USER_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function loadHashtagPostsAPI(data, lastId) {
+  return axios.get(`/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`);
+}
+
+function* loadHashtagPosts(action) {
+  try {
+    const result = yield call(loadHashtagPostsAPI, action.data, action.lastId);
+    yield put({
+      type: LOAD_USER_POSTS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_USER_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
 
 function retweetAPI(data) {
   return axios.post(`/post/${data}/retweet`);
@@ -101,6 +148,26 @@ function* unlikePost(action) {
     console.error(err);
     yield put({
       type: UNLIKE_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function loadSinglePostsAPI(data) {
+  return axios.get(`/post/${data}`);
+}
+
+function* loadSinglePost(action) {
+  try {
+    const result = yield call(loadSinglePostsAPI, action.data);
+    yield put({
+      type: LOAD_SINGLE_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_SINGLE_POST_FAILURE,
       error: err.response.data,
     });
   }
@@ -212,6 +279,17 @@ function* watchUnLikePost() {
   yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
 }
 
+function* watchLoadSinglePost() {
+  yield takeLatest(LOAD_SINGLE_POST_REQUEST, loadSinglePost);
+}
+function* watchLoadHashtagPosts() {
+  yield throttle(5000, LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts);
+}
+
+function* watchLoadUserPosts() {
+  yield throttle(5000, LOAD_USER_POSTS_REQUEST, loadUserPosts);
+}
+
 function* watchLoadPost() {
   yield throttle(5000, LOAD_POST_REQUEST, loadPost);
 }
@@ -234,6 +312,9 @@ export default function* postSaga() {
     fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnLikePost),
+    fork(watchLoadSinglePost),
+    fork(watchLoadHashtagPosts),
+    fork(watchLoadUserPosts),
     fork(watchLoadPost),
     fork(watchAddPost),
     fork(watchRemovePost),
