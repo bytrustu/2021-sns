@@ -9,7 +9,13 @@ import { LOAD_POST_REQUEST, LOAD_MY_INFO_REQUEST } from '../reducers/types';
 const Home = () => {
   const dispatch = useDispatch();
   const { me } = useSelector((state) => state.user);
-  const { mainPosts, loadPostLoading, hasMorePosts } = useSelector((state) => state.post);
+  const { mainPosts, loadPostLoading, hasMorePosts, retweetError } = useSelector((state) => state.post);
+
+  useEffect(() => {
+    if (retweetError) {
+      alert(retweetError);
+    }
+  }, [retweetError]);
 
   useEffect(() => {
     dispatch({
@@ -26,8 +32,10 @@ const Home = () => {
       const { clientHeight, scrollHeight } = document.documentElement;
       if (scrollY + clientHeight > scrollHeight - 300) {
         if (hasMorePosts && !loadPostLoading) {
+          const lastId = mainPosts[mainPosts.length - 1]?.id;
           dispatch({
             type: LOAD_POST_REQUEST,
+            lastId,
           });
         }
       }
