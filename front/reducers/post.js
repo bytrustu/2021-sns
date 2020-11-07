@@ -1,6 +1,6 @@
 import shortId from 'shortid';
-import produce from 'immer';
 import faker from 'faker';
+import produce from '../util/produce';
 import {
   ADD_COMMENT_FAILURE,
   ADD_COMMENT_REQUEST,
@@ -13,7 +13,6 @@ import {
   LIKE_POST_SUCCESS,
   LOAD_HASHTAG_POSTS_FAILURE,
   LOAD_HASHTAG_POSTS_REQUEST,
-  LOAD_HASHTAG_POSTS_SUCCESS,
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
   LOAD_POST_SUCCESS,
@@ -32,7 +31,7 @@ import {
   RETWEET_SUCCESS,
   UNLIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
-  UNLIKE_POST_SUCCESS,
+  UNLIKE_POST_SUCCESS, UPDATE_POST_FAILURE, UPDATE_POST_REQUEST, UPDATE_POST_SUCCESS,
   UPLOAD_IMAGES_FAILURE,
   UPLOAD_IMAGES_REQUEST,
   UPLOAD_IMAGES_SUCCESS,
@@ -61,6 +60,9 @@ export const initialState = {
   loadPostLoading: false,
   loadPostDone: false,
   loadPostError: null,
+  updatePostLoading: false,
+  updatePostDone: false,
+  updatePostError: null,
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
@@ -196,6 +198,20 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOAD_POST_FAILURE:
       draft.loadPostLoading = false;
       draft.loadPostError = action.error;
+      break;
+    case UPDATE_POST_REQUEST:
+      draft.updatePostLoading = true;
+      draft.updatePostDone = false;
+      draft.updatePostError = null;
+      break;
+    case UPDATE_POST_SUCCESS:
+      draft.updatePostLoading = false;
+      draft.updatePostDone = true;
+      draft.mainPosts.find((v) => v.id === action.data.PostId).content = action.data.content;
+      break;
+    case UPDATE_POST_FAILURE:
+      draft.updatePostLoading = false;
+      draft.updatePostError = action.error;
       break;
     case ADD_POST_REQUEST:
       draft.addPostLoading = true;
